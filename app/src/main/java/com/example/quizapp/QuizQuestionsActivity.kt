@@ -3,16 +3,19 @@ package com.example.quizapp
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.quizapp.helpers.Constants
 import com.example.quizapp.model.Question
+import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_quiz_questions.*
-import org.w3c.dom.Text
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -21,6 +24,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
     private var mSelectedOptionPosition: Int = 0
     private var mCorrectAnswers: Int = 0
     private var mUserName: String? = null
+    private var mCategory: Int? = 0
     private var mCanAnswer: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +33,11 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_quiz_questions)
 
         mUserName = intent.getStringExtra(Constants.USER_NAME)
+        mCategory = intent.getIntExtra(Constants.CATEGORY_ID, 0)
 
-        mQuestionList = Constants.getQuestions()
+        getQuestionsByCategory(mCategory!!, 10)
 
-        setQuestion()
+        //mQuestionList = Constants.getQuestions()
 
         tv_option_one.setOnClickListener (this)
         tv_option_two.setOnClickListener (this)
@@ -56,15 +61,20 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
         progressBar.progress = mCurrentPosition
         tv_progress.text = "$mCurrentPosition/${progressBar.max}"
 
-        tv_question.text = question!!.question
-        iv_image.setImageResource(question.image)
+        tv_question.text = question!!.getQuestion()
 
-        tv_option_one.text = question!!.optionOne
-        tv_option_two.text = question!!.optionTwo
-        tv_option_three.text = question!!.optionThree
-        tv_option_four.text = question!!.optionFour
+        // Add image with Picasso
+        Picasso.get().load(question!!.getImageUrl()).into(iv_image)
+
+        tv_option_one.text = question!!.getOptionOne()
+        tv_option_two.text = question!!.getOptionTwo()
+        tv_option_three.text = question!!.getOptionThree()
+        tv_option_four.text = question!!.getOptionFour()
 
         btn_submit.setOnClickListener(this)
+
+        // Omogućiti odgovaranje
+        mCanAnswer = true
     }
 
     private fun defaultOptionsView() {
@@ -112,22 +122,26 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     }
                 } else {
-                    val question = mQuestionList?.get(mCurrentPosition - 1)
-                    if (question!!.correctAnswer != mSelectedOptionPosition) {
-                        // Krivi odgovor
-                        answerView(mSelectedOptionPosition, R.drawable.wrong_option_border_bg)
-                    } else {
-                        // Točan odgovor
-                        mCorrectAnswers++
-                    }
-                    answerView(question.correctAnswer, R.drawable.correct_option_border_bg)
+                    if (mCanAnswer) {
+                        val question = mQuestionList?.get(mCurrentPosition - 1)
+                        if (question!!.getCorrectAnswer() != mSelectedOptionPosition) {
+                            // Krivi odgovor
+                            answerView(mSelectedOptionPosition, R.drawable.wrong_option_border_bg)
+                        } else {
+                            // Točan odgovor
+                            mCorrectAnswers++
+                        }
+                        answerView(question!!.getCorrectAnswer()!!.toInt(), R.drawable.correct_option_border_bg)
 
-                    if (mCurrentPosition == mQuestionList!!.size) {
-                        btn_submit.text = "KRAJ"
-                    } else {
-                        btn_submit.text = "Sljedeće pitanje"
+                        if (mCurrentPosition == mQuestionList!!.size) {
+                            btn_submit.text = "KRAJ"
+                        } else {
+                            btn_submit.text = "Sljedeće pitanje"
+                        }
+                        mSelectedOptionPosition = 0
+                        mCanAnswer = false
                     }
-                    mSelectedOptionPosition = 0
+
                 }
             }
         }
@@ -151,11 +165,45 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun selectedOptionView(tv: TextView, selectedOptionNum:Int) {
-        defaultOptionsView()
-        mSelectedOptionPosition = selectedOptionNum
+        if (mCanAnswer) {
 
-        tv.setTextColor(Color.parseColor("#363A43"))
-        tv.setTypeface(tv.typeface, Typeface.BOLD)
-        tv.background = ContextCompat.getDrawable(this, R.drawable.selected_option_border_bg)
+            defaultOptionsView()
+            mSelectedOptionPosition = selectedOptionNum
+
+            tv.setTextColor(Color.parseColor("#363A43"))
+            tv.setTypeface(tv.typeface, Typeface.BOLD)
+            tv.background = ContextCompat.getDrawable(this, R.drawable.selected_option_border_bg)
+
+        }
+    }
+
+    private fun getQuestionsByCategory(categoryId: Int, maxQuestions: Int){
+
+        mQuestionList = ArrayList<Question>()
+
+        val refQuestions = FirebaseDatabase.getInstance().reference.child("Questions")
+
+        refQuestions!!.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
+                mQuestionList!!.clear()
+
+                for (snapshot in p0.children) {
+                    val question = snapshot.getValue(Question::class.java)
+                    if(question!!.getCategory()!!.toInt() == categoryId) {
+                        mQuestionList!!.add(question!!)
+                    }
+                }
+
+                Collections.shuffle(mQuestionList)
+
+                setQuestion()
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+
     }
 }
