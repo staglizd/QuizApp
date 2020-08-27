@@ -7,6 +7,10 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.app
+import com.google.firebase.ktx.options
 import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity() {
@@ -31,6 +35,7 @@ class RegisterActivity : AppCompatActivity() {
         val username: String = username_register.text.toString()
         val email: String = email_register.text.toString()
         val password: String = password_register.text.toString()
+        val name: String = name_register.text.toString()
 
         if (username == "") {
             Toast.makeText(this@RegisterActivity, "Molimo unesite korisničko ime", Toast.LENGTH_LONG).show()
@@ -38,6 +43,8 @@ class RegisterActivity : AppCompatActivity() {
             Toast.makeText(this@RegisterActivity, "Molimo unesite email adresu", Toast.LENGTH_LONG).show()
         } else if (password == "") {
             Toast.makeText(this@RegisterActivity, "Molimo unesite lozinku", Toast.LENGTH_LONG).show()
+        } else if (name == "") {
+            Toast.makeText(this@RegisterActivity, "Molimo unesite ime i prezime", Toast.LENGTH_LONG).show()
         } else {
             // Register user
             mAuth.createUserWithEmailAndPassword(email, password)
@@ -50,6 +57,10 @@ class RegisterActivity : AppCompatActivity() {
                         userHashMap["uid"] = firebaseUserID
                         userHashMap["username"] = username
                         userHashMap["points"] = 0
+                        userHashMap["profile"] = "https://firebasestorage.googleapis.com/v0/b/quizapp-af119.appspot.com/o/User%20Images%2Fprofile.png?alt=media&token=8cdd3dfc-856b-468f-b78e-3eeecce69c35"
+                        userHashMap["registered"] = ServerValue.TIMESTAMP
+                        userHashMap["played"] = 0
+                        userHashMap["name"] = name
 
                         refUsers.updateChildren(userHashMap)
                             .addOnCompleteListener { task ->

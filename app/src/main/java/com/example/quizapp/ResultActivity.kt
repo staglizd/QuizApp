@@ -18,6 +18,7 @@ class ResultActivity : AppCompatActivity() {
     var firebaseUser: FirebaseUser? = null
     var refUsers: DatabaseReference? = null
     var overallPoints: Int = 0
+    var overallPlayed: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +56,7 @@ class ResultActivity : AppCompatActivity() {
                     var user = p0.getValue(Users::class.java)
 
                     overallPoints = user!!.getPoints()!! + points
+                    overallPlayed = user!!.getPlayed()!! + 1
 
                 }
             }
@@ -67,6 +69,8 @@ class ResultActivity : AppCompatActivity() {
         btn_finish.setOnClickListener {
             val mapUser = HashMap<String, Any>()
             mapUser["points"] = overallPoints
+            mapUser["played"] = overallPlayed
+            mapUser["lastPlayed"] = ServerValue.TIMESTAMP
 
             refUsers!!.updateChildren(mapUser).addOnCompleteListener {
                     task ->

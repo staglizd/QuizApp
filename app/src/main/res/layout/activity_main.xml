@@ -126,6 +126,30 @@
             android:background="@android:color/white"
             app:cardCornerRadius="8dp"
             app:cardElevation="5dp"
+            >
+
+            <Button
+                android:id="@+id/btn_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@android:color/holo_orange_light"
+                android:text="Korisnički profil"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                ></Button>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/white"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="5dp"
                 >
 
             <Button

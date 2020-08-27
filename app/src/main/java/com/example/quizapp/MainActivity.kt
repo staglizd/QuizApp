@@ -111,6 +111,16 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        btn_profile.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+
+        btn_ranks.setOnClickListener {
+            val intent = Intent(this, RankingActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
 }
