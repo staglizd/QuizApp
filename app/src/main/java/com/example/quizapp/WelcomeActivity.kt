@@ -26,6 +26,7 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
     }
 
     override fun onStart() {

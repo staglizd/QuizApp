@@ -2,6 +2,7 @@ package com.example.quizapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +13,9 @@ import com.example.quizapp.helpers.Constants
 import com.example.quizapp.helpers.Inserts
 import com.example.quizapp.model.Category
 import com.example.quizapp.model.Users
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -30,6 +34,8 @@ class MainActivity : AppCompatActivity() {
 
     var arrCategories = ArrayList<String>()
 
+    private lateinit var mInterstitialAd: InterstitialAd
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,6 +45,17 @@ class MainActivity : AppCompatActivity() {
 
         // Full screen aplikacija
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+
+        // Initialize Ads
+        MobileAds.initialize(this@MainActivity)
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
+
+        // Interstitial ad (full screen ads)
+        mInterstitialAd = InterstitialAd(this@MainActivity)
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712\n"
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         dropdown_category.setOnItemClickListener { parent, view, position, id ->
             categorySelected = mCategories!![position]
@@ -91,6 +108,13 @@ class MainActivity : AppCompatActivity() {
         })
 
         btn_start.setOnClickListener {
+
+            // Display interstitial ad
+            if (mInterstitialAd.isLoaded) {
+                mInterstitialAd.show()
+            } else {
+                Log.d("TAG", "The interstitial wasn't loaded yet")
+            }
             if (categorySelected != null) {
                 Toast.makeText(this, "Odabrali ste kategoriju: ${categorySelected!!.getName()}", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, QuizQuestionsActivity::class.java)

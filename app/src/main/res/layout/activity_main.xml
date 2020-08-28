@@ -109,7 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:background="@android:color/holo_green_light"
+                android:background="#ff99cc00"
                 android:text="Poredak"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
@@ -133,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:background="@android:color/holo_orange_light"
+                android:background="#ffffbb33"
                 android:text="Korisnički profil"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
@@ -157,13 +157,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:background="@android:color/holo_red_light"
+                android:background="#ffff4444"
                 android:text="Odjavi se"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
                 ></Button>
 
         </androidx.cardview.widget.CardView>
+
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+            </com.google.android.gms.ads.AdView>
 
     </LinearLayout>
 
