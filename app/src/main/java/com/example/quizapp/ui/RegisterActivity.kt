@@ -1,16 +1,14 @@
-package com.example.quizapp
+package com.example.quizapp.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.example.quizapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.app
-import com.google.firebase.ktx.options
 import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity() {
@@ -38,13 +36,13 @@ class RegisterActivity : AppCompatActivity() {
         val name: String = name_register.text.toString()
 
         if (username == "") {
-            Toast.makeText(this@RegisterActivity, "Molimo unesite korisničko ime", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@RegisterActivity, R.string.register_insert_username, Toast.LENGTH_LONG).show()
         } else if (email == "") {
-            Toast.makeText(this@RegisterActivity, "Molimo unesite email adresu", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@RegisterActivity, R.string.register_insert_email, Toast.LENGTH_LONG).show()
         } else if (password == "") {
-            Toast.makeText(this@RegisterActivity, "Molimo unesite lozinku", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@RegisterActivity, R.string.register_insert_password, Toast.LENGTH_LONG).show()
         } else if (name == "") {
-            Toast.makeText(this@RegisterActivity, "Molimo unesite ime i prezime", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@RegisterActivity, R.string.register_insert_name, Toast.LENGTH_LONG).show()
         } else {
             // Register user
             mAuth.createUserWithEmailAndPassword(email, password)

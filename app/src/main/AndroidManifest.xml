@@ -17,15 +17,15 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6735162421884355~6925874612"></meta-data>
 
-        <activity android:name=".RankingActivity"></activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".ui.RankingActivity"></activity>
+        <activity android:name=".ui.SettingsActivity" />
+        <activity android:name=".ui.LoginActivity" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme" />
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".ui.WelcomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme">
             <intent-filter>
@@ -35,14 +35,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ResultActivity"
+            android:name=".ui.ResultActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme" />
         <activity
-            android:name=".QuizQuestionsActivity"
+            android:name=".ui.QuizQuestionsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />

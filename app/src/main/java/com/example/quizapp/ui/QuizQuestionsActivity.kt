@@ -1,4 +1,4 @@
-package com.example.quizapp
+package com.example.quizapp.ui
 
 import android.content.Intent
 import android.graphics.Color
@@ -6,26 +6,38 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.quizapp.R
+import com.example.quizapp.data.network.QuestionsApiService
 import com.example.quizapp.helpers.Constants
 import com.example.quizapp.model.Question
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_quiz_questions.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
+class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, CoroutineScope by MainScope(){
 
     private var mCurrentPosition: Int = 1
     private var mQuestionList: ArrayList<Question>? = null
+    private var mQuestionLoaded: List<com.example.quizapp.data.db.entity.Question>? = null
     private var mSelectedOptionPosition: Int = 0
     private var mCorrectAnswers: Int = 0
     private var mUserName: String? = null
     private var mCategory: Int? = 0
     private var mCanAnswer: Boolean = true
+    private var mTotalQuestions: Int? = 0
+    private var mDifficulty: String? = ""
+
+    var apiService: QuestionsApiService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -34,8 +46,43 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
         mUserName = intent.getStringExtra(Constants.USER_NAME)
         mCategory = intent.getIntExtra(Constants.CATEGORY_ID, 0)
+        mTotalQuestions = intent.getIntExtra(Constants.TOTAL_QUESTIONS, 0)
+        mDifficulty = intent.getStringExtra(Constants.DIFFICULTY)
 
-        getQuestionsByCategory(mCategory!!, 10)
+        // New API service call trivia
+        //getQuestions(mTotalQuestions, mCategory, mDifficulty);
+//        val apiInterface = apiService!!.getQuestions(mTotalQuestions!!, mCategory!!, mDifficulty!!, "multiple")
+
+        launch(Dispatchers.Main) {
+            try {
+                val response =
+                    apiService?.getQuestions(mTotalQuestions!!, mCategory!!, mDifficulty!!, "multiple")
+                if (response!!.isSuccessful && response.body() != null) {
+                    val data = response.body()
+                    mQuestionLoaded = data!!.results
+//                    mQuestionList = (data!!.results as ArrayList<Question>)
+
+                    // TODO Convert questions
+                    var autoId = 0;
+                    for (question in mQuestionLoaded!!) {
+                        autoId++
+                        val newQuestion: Question = Question(autoId, question.category,
+                            question.question, "", question.incorrectAnswers[0],
+                            question.incorrectAnswers[1], question.incorrectAnswers[2],
+                            question.correctAnswer, 4)
+                        mQuestionList!!.add(newQuestion)
+                    }
+
+                    setQuestion()
+                } else {
+                    Toast.makeText(this@QuizQuestionsActivity, "Error ${response.message()}", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@QuizQuestionsActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        //getQuestionsByCategory(mCategory!!, 10)
 
         //mQuestionList = Constants.getQuestions()
 
@@ -131,12 +178,14 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
                             // Točan odgovor
                             mCorrectAnswers++
                         }
-                        answerView(question!!.getCorrectAnswer()!!.toInt(), R.drawable.correct_option_border_bg)
+                        answerView(question!!.getCorrectAnswer()!!.toInt(),
+                            R.drawable.correct_option_border_bg
+                        )
 
                         if (mCurrentPosition == mQuestionList!!.size) {
-                            btn_submit.text = "KRAJ"
+                            btn_submit.text = "${getString(R.string.quiz_end)}"
                         } else {
-                            btn_submit.text = "Sljedeće pitanje"
+                            btn_submit.text = "${getString(R.string.quiz_next_question)}"
                         }
                         mSelectedOptionPosition = 0
                         mCanAnswer = false
@@ -206,4 +255,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
         })
 
     }
+
+    // New API service call trivia
+
 }

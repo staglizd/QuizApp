@@ -1,18 +1,18 @@
-package com.example.quizapp
+package com.example.quizapp.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.quizapp.R
 import com.example.quizapp.helpers.Constants
 import com.example.quizapp.helpers.Inserts
 import com.example.quizapp.model.Category
 import com.example.quizapp.model.Users
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -31,8 +31,11 @@ class MainActivity : AppCompatActivity() {
     var user: Users? = null
     var mCategories: List<Category>? = null
     var categorySelected: Category? = null
+    var difficulty: String? = null
+    var numberOfQuestions: Int? = 0
 
     var arrCategories = ArrayList<String>()
+    var arrDifficulty = ArrayList<String>()
 
     private lateinit var mInterstitialAd: InterstitialAd
 
@@ -48,14 +51,21 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize Ads
         MobileAds.initialize(this@MainActivity)
+
+        // AdMob banner
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
 
-
         // Interstitial ad (full screen ads)
         mInterstitialAd = InterstitialAd(this@MainActivity)
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712\n"
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
         mInterstitialAd.loadAd(AdRequest.Builder().build())
+
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdClosed() {
+                Toast.makeText(this@MainActivity, R.string.main_ad_closed, Toast.LENGTH_SHORT).show()
+            }
+        }
 
         dropdown_category.setOnItemClickListener { parent, view, position, id ->
             categorySelected = mCategories!![position]
@@ -71,10 +81,10 @@ class MainActivity : AppCompatActivity() {
                     user = p0.getValue(Users::class.java)
 
                     // Trenutno stanje bodova
-                    tv_points.text = "Trenutno stanje bodova: ${user!!.getPoints()}"
+                    tv_points.text = "${getString(R.string.main_current_pts)}: ${user!!.getPoints()}"
 
                     // Pozdravna poruka
-                    tv_welcome.text = "Dobrodošli ${user!!.getUsername()}!"
+                    tv_welcome.text = "${getString(R.string.main_welcome)} ${user!!.getUsername()}!"
                 }
             }
 
@@ -85,6 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         mCategories = ArrayList()
         arrCategories = ArrayList<String>()
+        arrDifficulty = ArrayList<String>()
 
         refCategories!!.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
@@ -93,13 +104,25 @@ class MainActivity : AppCompatActivity() {
 
                 for (snapshot in p0.children) {
                     val category = snapshot.getValue(Category::class.java)
-                    arrCategories.add(category!!.getName().toString())
-                    (mCategories as ArrayList).add(category!!)
+                    if (category!!.getActive() == 1) {
+                        arrCategories.add(category!!.getName().toString())
+                        (mCategories as ArrayList).add(category!!)
+                    }
                 }
 
                 // Izbor kategorije
-                val adapter:ArrayAdapter<String> = ArrayAdapter(this@MainActivity, R.layout.dropdown_menu_popup_item, arrCategories)
+                val adapter:ArrayAdapter<String> = ArrayAdapter(this@MainActivity,
+                    R.layout.dropdown_menu_popup_item, arrCategories)
                 dropdown_category.setAdapter(adapter)
+
+                // Izbor težine
+                arrDifficulty.add("Easy")
+                arrDifficulty.add("Medium")
+                arrDifficulty.add("Hard")
+                val adapterDifficulty: ArrayAdapter<String> = ArrayAdapter(this@MainActivity,
+                    R.layout.dropdown_menu_popup_item, arrDifficulty)
+                dropdown_difficulty.setAdapter(adapterDifficulty)
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -115,15 +138,25 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet")
             }
+
             if (categorySelected != null) {
-                Toast.makeText(this, "Odabrali ste kategoriju: ${categorySelected!!.getName()}", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, QuizQuestionsActivity::class.java)
-                intent.putExtra(Constants.CATEGORY_ID, categorySelected!!.getId())
-                intent.putExtra(Constants.USER_NAME, user!!.getUsername())
-                startActivity(intent)
-                finish()
+
+                if (dropdown_difficulty.text.toString().equals("Easy") || dropdown_difficulty.text.toString().equals("Medium")
+                    || dropdown_difficulty.text.toString().equals("Hard")) {
+                    Toast.makeText(this, "${getString(R.string.main_you_picked)}: ${categorySelected!!.getName()}", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, QuizQuestionsActivity::class.java)
+                    intent.putExtra(Constants.CATEGORY_ID, categorySelected!!.getId())
+                    intent.putExtra(Constants.USER_NAME, user!!.getUsername())
+                    intent.putExtra(Constants.NUMBER_OF_QUESTIONS, sNumberQuestions.value.toInt())
+                    intent.putExtra(Constants.DIFFICULTY, dropdown_difficulty.text.toString())
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, R.string.main_choose_difficulty_msg, Toast.LENGTH_LONG).show()
+                }
+
             } else {
-                Toast.makeText(this, "Molimo odaberite kategoriju", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, R.string.main_pick_category_msg, Toast.LENGTH_LONG).show()
             }
         }
 

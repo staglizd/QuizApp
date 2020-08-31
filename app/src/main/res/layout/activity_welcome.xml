@@ -8,7 +8,7 @@
     android:gravity="center_horizontal"
     android:paddingTop="25dp"
     android:background="@drawable/ic_bg"
-    tools:context=".WelcomeActivity">
+    tools:context=".ui.WelcomeActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,14 +16,14 @@
         android:textColor="@android:color/white"
         android:textSize="35sp"
         android:textStyle="bold"
-        android:text="Dobrodošli">
+        android:text="@string/welcome_text">
     </TextView>
 
     <Button
         android:id="@+id/register_welcome_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Registracija"
+        android:text="@string/welcome_register"
         android:textColor="@android:color/white"
         android:background="@color/colorPrimaryDark"
         android:layout_marginLeft="20dp"
@@ -35,7 +35,7 @@
         android:id="@+id/login_welcome_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Prijava"
+        android:text="@string/welcome_login"
         android:textColor="@android:color/white"
         android:background="@color/colorPrimaryDark"
         android:layout_marginLeft="20dp"

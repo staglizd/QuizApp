@@ -1,13 +1,13 @@
-package com.example.quizapp
+package com.example.quizapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.quizapp.R
 import com.example.quizapp.adapter.UsersAdapter
 import com.example.quizapp.model.Users
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_ranking.*
 
 class RankingActivity : AppCompatActivity() {
     var mUserList: List<Users>? = null

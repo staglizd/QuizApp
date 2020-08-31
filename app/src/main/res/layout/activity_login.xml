@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_bg"
-    tools:context=".LoginActivity">
+    tools:context=".ui.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint="Email adresa"
+            android:hint="@string/login_email_hint"
             android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white">
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="Lozinka"
+            android:hint="@string/login_password_hint"
             android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white">
@@ -41,7 +41,7 @@
             android:id="@+id/login_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Prijavi se"
+            android:text="@string/login_button_text"
             android:layout_marginTop="25dp"
             android:textColor="@android:color/white"
             android:background="@color/colorPrimaryDark"

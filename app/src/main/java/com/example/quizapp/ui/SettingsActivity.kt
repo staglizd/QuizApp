@@ -1,4 +1,4 @@
-package com.example.quizapp
+package com.example.quizapp.ui
 
 import android.app.Activity
 import android.app.ProgressDialog
@@ -7,7 +7,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.example.quizapp.helpers.Constants
+import com.example.quizapp.R
 import com.example.quizapp.model.Users
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
@@ -19,7 +19,6 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.activity_settings.tv_points
 
@@ -47,8 +46,8 @@ class SettingsActivity : AppCompatActivity() {
 
                     if (this@SettingsActivity != null) {
                         tv_username.text = user?.getName()
-                        tv_points.text = "Bodovi: ${user!!.getPoints()}"
-                        tv_played.text = "Odigrano: ${user!!.getPlayed()}"
+                        tv_points.text = "${getString(R.string.settings_points)}: ${user!!.getPoints()}"
+                        tv_played.text = "${getString(R.string.settings_played)}: ${user!!.getPlayed()}"
 
                         Picasso.get().load(user?.getProfile())
                             .into(profile_image_settings)
@@ -65,7 +64,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
         btn_save.setOnClickListener {
-            Toast.makeText(this@SettingsActivity, "Postavke uspješno spremljene", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@SettingsActivity, R.string.settings_saved_msg, Toast.LENGTH_SHORT).show()
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -91,7 +90,7 @@ class SettingsActivity : AppCompatActivity() {
         if (requestCode == RequestCode && resultCode == Activity.RESULT_OK
             && data!!.data != null) {
             imageUri = data.data
-            Toast.makeText(this@SettingsActivity, "Učitavanje slike ...", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@SettingsActivity, R.string.settings_image_loading, Toast.LENGTH_LONG).show()
             uploadImageToDb()
         }
     }
@@ -99,7 +98,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun uploadImageToDb() {
         val progressBar = ProgressDialog(this@SettingsActivity)
-        progressBar.setMessage("Slika se učitava, molimo pričekajte ...")
+        progressBar.setMessage("${getString(R.string.settings_please_wait)}")
         progressBar.show()
 
         if (imageUri != null) {

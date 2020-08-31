@@ -1,3 +1,82 @@
 <resources>
     <string name="app_name">QuizApp</string>
+
+    <!-- Login screen -->
+    <string name="login_email_hint">E-mail address</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button_text">Login</string>
+    <string name="login_insert_email">Please enter your e-mail address</string>
+    <string name="login_insert_password">Please enter your password</string>
+
+
+    <!-- Registration screen -->
+    <string name="register_username_hint">Insert username</string>
+    <string name="register_name_hint">Insert your name</string>
+    <string name="register_email_hint">Insert your email address</string>
+    <string name="register_password_hint">Insert your password</string>
+    <string name="register_button_text">Register</string>
+    <string name="register_insert_username">Please enter your username</string>
+    <string name="register_insert_name">Please enter your name</string>
+    <string name="register_insert_email">Please enter you email address</string>
+    <string name="register_insert_password">Please enter your password</string>
+
+
+    <!-- Welcome screen -->
+    <string name="welcome_text">Dobrodošli</string>
+    <string name="welcome_register">Register</string>
+    <string name="welcome_login">Login</string>
+
+
+    <!-- Ranking screen -->
+    <string name="ranking_title">Ranking</string>
+    <string name="ranking_points">Points</string>
+    <string name="ranking_played">Played</string>
+
+
+    <!-- Result screen -->
+    <string name="result_title">Result</string>
+    <string name="result_congratulation">Congratulations</string>
+    <string name="result_end">End</string>
+    <string name="result_your_score">Your score is</string>
+    <string name="result_out_of">out of</string>
+    <string name="result_gets_you">which gets you</string>
+    <string name="result_point_small">point</string>
+    <string name="result_points_small">points</string>
+    <string name="result_watch_ad">Watch one ad to get free 10 points</string>
+    <string name="result_error_ad">Error while loading an ad, please try again later</string>
+
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_points">Points</string>
+    <string name="settings_played">Played</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_saved_msg">Settings successfully saved</string>
+    <string name="settings_image_loading">Image loading ...</string>
+    <string name="settings_please_wait">Image is loading, please wait</string>
+
+
+    <!-- Main screen -->
+    <string name="main_welcome">Welcome</string>
+    <string name="main_current_pts">Current points</string>
+    <string name="main_pick_category">Pick a category</string>
+    <string name="main_choose_difficulty">Choose difficulty</string>
+    <string name="main_questions">Select number of questions</string>
+    <string name="main_go">Go</string>
+    <string name="main_ranking">Ranking</string>
+    <string name="main_userprofile">User profile</string>
+    <string name="main_logout">Logout</string>
+    <string name="main_ad_closed">Ad is closed</string>
+    <string name="main_you_picked">You picked a category</string>
+    <string name="main_choose_difficulty_msg">Please choose difficulty</string>
+    <string name="main_pick_category_msg">Please pick a category</string>
+
+
+    <!-- Quiz screen -->
+    <string name="quiz_answer_submit">Submit</string>
+    <string name="quiz_end">End</string>
+    <string name="quiz_next_question">Next question</string>
+
+
 </resources>

@@ -1,12 +1,12 @@
-package com.example.quizapp
+package com.example.quizapp.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.example.quizapp.R
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlin.math.log
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
@@ -28,9 +28,9 @@ class LoginActivity : AppCompatActivity() {
         val password: String = password_login.text.toString()
 
         if (email == "") {
-            Toast.makeText(this@LoginActivity, "Molimo unesite email adresu", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@LoginActivity, R.string.login_insert_email, Toast.LENGTH_LONG).show()
         } else if (password == "") {
-            Toast.makeText(this@LoginActivity, "Molimo unesite lozinku", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@LoginActivity, R.string.login_insert_password, Toast.LENGTH_LONG).show()
         } else {
             // Login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {

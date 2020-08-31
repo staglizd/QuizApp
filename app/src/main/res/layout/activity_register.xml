@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_bg"
-    tools:context=".RegisterActivity">
+    tools:context=".ui.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,25 +20,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint="Korisničko ime"
+            android:hint="@string/register_username_hint"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white">
         </EditText>
+
         <EditText
             android:id="@+id/name_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint="Ime i prezime"
+            android:hint="@string/register_name_hint"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white">
         </EditText>
+
         <EditText
             android:id="@+id/email_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint="Email adresa"
+            android:hint="@string/register_email_hint"
             android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white">
@@ -48,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="Lozinka"
+            android:hint="@string/register_password_hint"
             android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white">
@@ -58,7 +60,7 @@
             android:id="@+id/register_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registriraj se"
+            android:text="@string/register_button_text"
             android:layout_marginTop="25dp"
             android:textColor="@android:color/white"
             android:background="@color/colorPrimaryDark"
