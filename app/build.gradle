@@ -59,6 +59,7 @@ dependencies {
 
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.corouteam:GlideToVectorYou:v2.0.0'
 
     implementation 'com.android.support:multidex:1.0.3'
 

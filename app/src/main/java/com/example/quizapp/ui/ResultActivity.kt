@@ -42,8 +42,17 @@ class ResultActivity : AppCompatActivity(), RewardedVideoAdListener {
 
         val totalQuestions = intent.getIntExtra(Constants.TOTAL_QUESTIONS, 0)
         val correctAnswers = intent.getIntExtra(Constants.CORRECT_ANSWERS, 0)
+        val difficulty = intent.getStringExtra(Constants.DIFFICULTY)
+        var ponder = 1
 
-        var points = correctAnswers*2 - (totalQuestions-correctAnswers)
+        when (difficulty) {
+            "Easy" -> ponder = 2
+            "Medium" -> ponder = 3
+            "Hard" -> ponder = 4
+            else -> ponder = 2
+        }
+
+        var points = correctAnswers * ponder - (totalQuestions-correctAnswers)
         if (points < 0) {
             points = 0
         }
@@ -100,7 +109,7 @@ class ResultActivity : AppCompatActivity(), RewardedVideoAdListener {
     }
 
     private fun loadRewardedVideoAd() {
-        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
+        mRewardedVideoAd.loadAd(Constants.AWARDEDVIDEOADID,
             AdRequest.Builder().build())
     }
 
@@ -126,7 +135,7 @@ class ResultActivity : AppCompatActivity(), RewardedVideoAdListener {
     }
 
     override fun onRewarded(p0: RewardItem?) {
-        Toast.makeText(this@ResultActivity, "Nagrada", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@ResultActivity, R.string.result_award, Toast.LENGTH_SHORT).show()
 
         val mapUser = HashMap<String, Any>()
         mapUser["points"] = overallPoints + 10

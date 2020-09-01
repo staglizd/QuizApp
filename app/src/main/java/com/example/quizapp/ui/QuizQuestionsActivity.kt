@@ -3,6 +3,7 @@ package com.example.quizapp.ui
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,27 +12,31 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.quizapp.R
-import com.example.quizapp.data.network.QuestionsApiService
-import com.example.quizapp.data.network.RetrofitFactory
+import com.example.quizapp.data.network.api.CountriesApiService
+import com.example.quizapp.data.network.api.QuestionsApiService
+import com.example.quizapp.data.network.response.countries.CountriesResponse
+import com.example.quizapp.data.network.response.countries.CountriesResponseItem
 import com.example.quizapp.helpers.Constants
 import com.example.quizapp.model.Question
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_quiz_questions.*
 import kotlinx.coroutines.*
-import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import kotlin.collections.ArrayList
 
-const val BASE_URL = "https://opentdb.com/"
+const val BASE_URL_QUESTIONS = "https://opentdb.com/"
+const val BASE_URL_COUNTRIES = "https://restcountries.eu/"
 
 class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, CoroutineScope by MainScope(){
 
     private var mCurrentPosition: Int = 1
     private var mQuestionList: ArrayList<Question>? = null
+    private var mCountriesList: ArrayList<CountriesResponseItem>? = null
     private var mQuestionLoaded: List<com.example.quizapp.data.db.entity.Question>? = null
     private var mSelectedOptionPosition: Int = 0
     private var mCorrectAnswers: Int = 0
@@ -53,10 +58,18 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
         mTotalQuestions = intent.getIntExtra(Constants.NUMBER_OF_QUESTIONS, 0)
         mDifficulty = intent.getStringExtra(Constants.DIFFICULTY)
 
-        // New API service call trivia
-        getQuestions(mTotalQuestions!!, mCategory!!, mDifficulty!!.toLowerCase(), "multiple")
+        Log.e("QuizActivity-START:", "User: ${mUserName}, Category: ${mCategory}, Questions: ${mTotalQuestions}, Difficulty: ${mDifficulty}")
 
-        //getQuestionsByCategory(mCategory!!, 10)
+        // Flags (1), others new API
+        if (mCategory == 1) {
+            // Flags
+            getCountries()
+            //getQuestionsByCategory(mCategory!!, 10)
+        } else {
+            // New API service call trivia
+            getQuestions(mTotalQuestions!!, mCategory!!, mDifficulty!!.toLowerCase(), "multiple")
+        }
+
         //mQuestionList = Constants.getQuestions()
 
         tv_option_one.setOnClickListener (this)
@@ -73,9 +86,9 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
         defaultOptionsView()
 
         if (mCurrentPosition == mQuestionList!!.size) {
-            btn_submit.text = "KRAJ"
+            btn_submit.text = getString(R.string.quiz_end)
         } else {
-            btn_submit.text = "Pošalji"
+            btn_submit.text = getString(R.string.quiz_answer_submit)
         }
 
         progressBar.progress = mCurrentPosition
@@ -85,8 +98,15 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
         tv_question.text = question!!.getQuestion()
 
         // Add image with Picasso
+        Log.e("QuizActivity-Image:", question.getImageUrl())
         if (question!!.getImageUrl() != "") {
-            Picasso.get().load(question!!.getImageUrl()).into(iv_image)
+            if (question!!.getImageUrl()!!.substringAfterLast(".").equals("svg")) {
+                // Vector load
+                GlideToVectorYou.justLoadImage(this, Uri.parse(question!!.getImageUrl()), iv_image)
+            } else {
+                Picasso.get().load(question!!.getImageUrl()).into(iv_image)
+            }
+
         }
 
         tv_option_one.text = question!!.getOptionOne()
@@ -140,6 +160,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
                             intent.putExtra(Constants.USER_NAME, mUserName)
                             intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList!!.size)
                             intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers)
+                            intent.putExtra(Constants.DIFFICULTY, mDifficulty)
                             startActivity(intent)
                             finish()
                         }
@@ -206,7 +227,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
 
         mQuestionList = ArrayList<Question>()
 
-        val refQuestions = FirebaseDatabase.getInstance().reference.child("Questions")
+        val refQuestions = FirebaseDatabase.getInstance().reference.child("Questions").limitToFirst(maxQuestions)
 
         refQuestions!!.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
@@ -232,10 +253,101 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
 
     }
 
+    // New API service for countries
+    private fun getCountries() {
+        val api = Retrofit.Builder()
+            .baseUrl(BASE_URL_COUNTRIES)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CountriesApiService::class.java)
+
+        GlobalScope.launch (Dispatchers.IO) {
+            try {
+                val response = api.getCountries().awaitResponse()
+                if(response.isSuccessful) {
+
+                    mCountriesList = ArrayList<CountriesResponseItem>()
+                    mQuestionList = ArrayList<Question>()
+
+                    // Save objects
+                    val data = response.body()!!
+                    mCountriesList = data
+
+                    Collections.shuffle(mCountriesList)
+
+                    var autoId = 0
+                    for (country in mCountriesList as CountriesResponse) {
+                        autoId++
+
+                        val ctrQuestion: Question
+                        // Set random correct answer
+                        val rnds = (1..4).random()
+
+                        when (rnds) {
+                            1 -> ctrQuestion = Question(autoId, "1",
+                                "What country does this flag belong to?", country.flag,
+                                country.name, (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, 1)
+
+                            2 -> ctrQuestion = Question(autoId, "1",
+                                "What country does this flag belong to?", country.flag,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, country.name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, 2)
+
+                            3 -> ctrQuestion = Question(autoId, "1",
+                                "What country does this flag belong to?", country.flag,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, country.name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, 3)
+
+                            4 -> ctrQuestion = Question(autoId, "1",
+                                "What country does this flag belong to?", country.flag,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, country.name, 4)
+
+                            else -> ctrQuestion = Question(autoId, "1",
+                                "What country does this flag belong to?", country.flag,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name,
+                                (mCountriesList as CountriesResponse)[(1..(mCountriesList as CountriesResponse).size-1).shuffled().first()].name, country.name, 4)
+                        }
+
+                        mQuestionList!!.add(ctrQuestion)
+
+                        if (autoId == mTotalQuestions) {
+                            break
+                        }
+                    }
+
+                    Log.e("QuizActivity-C:", data.toString())
+
+                    withContext(Dispatchers.Main) {
+
+                        setQuestion()
+
+                    }
+                } else {
+                    Toast.makeText(this@QuizQuestionsActivity, "Error", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    //Toast.makeText(applicationContext, "Please try again later, there is no internet connection!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@QuizQuestionsActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    finish()
+                }
+            }
+
+        }
+    }
+
     // New API service call trivia
     private fun getQuestions(amount: Int, categoryId: Int, difficulty: String, type: String) {
         val api = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_QUESTIONS)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(QuestionsApiService::class.java)
@@ -250,10 +362,6 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
                         finish()
                     } else {
                         val data = response.body()!!
-//                    Log.d("QuizActivity-P:", "amount:${amount} category:${categoryId} difficulty:${difficulty} type:${type}")
-//                    Log.d("QuizActivity-C:", response.body()!!.responseCode.toString())
-//                    Log.d("QuizActivity-H:", response.headers().toString())
-                    Log.d("QuizActivity-R:", data.results.toString())
 
                         // TODO Convert questions
                         mQuestionList = ArrayList<Question>()
@@ -261,14 +369,8 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
                         var autoId = 0;
                         for (question in data.results) {
                             autoId++
-                            val newQuestion: Question = Question(autoId, question.category,
-                                question.question, "", question.incorrectAnswers[1],
-                                question.incorrectAnswers[1], question.incorrectAnswers[1],
-                                question.correctAnswer, 4)
-                            mQuestionList!!.add(newQuestion)
+                            mQuestionList!!.add(setRandomQuestion(autoId, question))
                         }
-
-//                        Log.e("QuizActivity-Q:", mQuestionList.toString())
 
                         withContext(Dispatchers.Main) {
 
@@ -280,11 +382,49 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener, Corouti
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     //Toast.makeText(applicationContext, "Please try again later, there is no internet connection!", Toast.LENGTH_LONG).show()
-                    Toast.makeText(applicationContext, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@QuizQuestionsActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
 
         }
+    }
+
+    private fun setRandomQuestion(autoId: Int, question: com.example.quizapp.data.db.entity.Question): Question {
+
+        val newQuestion: Question
+
+        // Set random correct answer
+        val rnds = (1..4).random()
+
+        when (rnds) {
+            1 -> newQuestion = Question(autoId, question.category,
+                question.question.replace("&#039;", "'").replace("&quot;", "\"")
+                    .replace("&rsquo;", "'"), "",
+                question.correctAnswer, question.incorrectAnswers[0], question.incorrectAnswers[1], question.incorrectAnswers[2], 1)
+
+            2 -> newQuestion = Question(autoId, question.category,
+                question.question.replace("&#039;", "'").replace("&quot;", "\"")
+                    .replace("&rsquo;", "'"), "",
+                question.incorrectAnswers[0], question.correctAnswer, question.incorrectAnswers[1], question.incorrectAnswers[2], 2)
+
+            3 -> newQuestion = Question(autoId, question.category,
+                question.question.replace("&#039;", "'").replace("&quot;", "\"")
+                    .replace("&rsquo;", "'"), "",
+                question.incorrectAnswers[0], question.incorrectAnswers[1], question.correctAnswer, question.incorrectAnswers[2], 3)
+
+            4 -> newQuestion = Question(autoId, question.category,
+                question.question.replace("&#039;", "'").replace("&quot;", "\"")
+                    .replace("&rsquo;", "'"), "",
+                question.incorrectAnswers[0], question.incorrectAnswers[1], question.incorrectAnswers[2], question.correctAnswer, 4)
+
+            else -> newQuestion = Question(autoId, question.category,
+                question.question.replace("&#039;", "'").replace("&quot;", "\"")
+                    .replace("&rsquo;", "'"), "",
+                question.incorrectAnswers[0], question.incorrectAnswers[1], question.incorrectAnswers[2], question.correctAnswer, 4)
+        }
+
+        return newQuestion
+
     }
 }

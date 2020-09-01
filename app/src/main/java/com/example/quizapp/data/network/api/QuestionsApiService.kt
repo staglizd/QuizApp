@@ -1,4 +1,4 @@
-package com.example.quizapp.data.network
+package com.example.quizapp.data.network.api
 
 import com.example.quizapp.data.db.entity.QuestionsResponse
 import retrofit2.Call

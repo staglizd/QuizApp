@@ -22,15 +22,16 @@
             android:layout_margin="10dp"
             android:gravity="center"
             android:textColor="#363A43"
-            android:textSize="22sp"
-            android:text="Kojoj državi pripada navedena zastava?">
+            android:textSize="22sp">
 
         </TextView>
 
         <ImageView
             android:id="@+id/iv_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="150dp"
+            android:maxWidth="150dp"
+            android:maxHeight="300dp"
             android:layout_marginTop="16dp"
             ></ImageView>
 
@@ -68,7 +69,7 @@
             </TextView>
 
         </LinearLayout>
-        
+
         <TextView
             android:id="@+id/tv_option_one"
             android:layout_width="match_parent"
@@ -78,9 +79,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:textColor="#7A8089"
-            android:textSize="18sp"
-            tools:text="Prva opcija"
-            ></TextView>
+            android:textSize="18sp"></TextView>
 
         <TextView
             android:id="@+id/tv_option_two"
@@ -91,9 +90,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:textColor="#7A8089"
-            android:textSize="18sp"
-            tools:text="Druga opcija"
-            ></TextView>
+            android:textSize="18sp"></TextView>
 
         <TextView
             android:id="@+id/tv_option_three"
@@ -104,9 +101,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:textColor="#7A8089"
-            android:textSize="18sp"
-            tools:text="Treća opcija"
-            ></TextView>
+            android:textSize="18sp"></TextView>
 
         <TextView
             android:id="@+id/tv_option_four"
@@ -117,9 +112,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:textColor="#7A8089"
-            android:textSize="18sp"
-            tools:text="Četvrta opcija"
-            ></TextView>
+            android:textSize="18sp"></TextView>
 
         <Button
             android:id="@+id/btn_submit"

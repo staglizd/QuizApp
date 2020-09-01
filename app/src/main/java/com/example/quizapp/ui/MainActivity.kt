@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Inserts.addCategories()
-        Inserts.addQuestions()
+//        Inserts.addCategories()
+//        Inserts.addQuestions()
 
         // Full screen aplikacija
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         // Interstitial ad (full screen ads)
         mInterstitialAd = InterstitialAd(this@MainActivity)
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = Constants.INTERSTITIALADID
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         mInterstitialAd.adListener = object : AdListener() {

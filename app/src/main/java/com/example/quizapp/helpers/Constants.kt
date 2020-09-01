@@ -11,6 +11,9 @@ object Constants {
     const val NUMBER_OF_QUESTIONS: String = "number_of_questions"
     const val DIFFICULTY : String = "difficulty"
 
+    const val INTERSTITIALADID : String = "ca-app-pub-3940256099942544/1033173712"
+    const val AWARDEDVIDEOADID : String = "ca-app-pub-3940256099942544/5224354917"
+
     fun getQuestions(): ArrayList<Question>{
         val questionsList = ArrayList<Question>()
 /*

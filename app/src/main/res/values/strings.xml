@@ -44,6 +44,7 @@
     <string name="result_points_small">points</string>
     <string name="result_watch_ad">Watch one ad to get free 10 points</string>
     <string name="result_error_ad">Error while loading an ad, please try again later</string>
+    <string name="result_award">You have received 10 points!</string>
 
 
     <!-- Settings screen -->
@@ -71,6 +72,7 @@
     <string name="main_you_picked">You picked a category</string>
     <string name="main_choose_difficulty_msg">Please choose difficulty</string>
     <string name="main_pick_category_msg">Please pick a category</string>
+    <string name="main_admob_id">ca-app-pub-3940256099942544/6300978111</string>
 
 
     <!-- Quiz screen -->
