@@ -33,8 +33,8 @@ class UsersAdapter (
         Picasso.get().load(user?.getProfile()).into(holder.profile_image_ranking)
 
         holder.name_ranking!!.text = user?.getName()
-        holder.tv_points_ranking!!.text = "${R.string.ranking_points}: ${user!!.getPoints()}"
-        holder.tv_played_ranking!!.text = "${R.string.ranking_played}: ${user!!.getPlayed()}"
+        holder.tv_points_ranking!!.text = "${mContext!!.getString(R.string.ranking_points)}: ${user!!.getPoints()}"
+        holder.tv_played_ranking!!.text = "${mContext!!.getString(R.string.ranking_played)}: ${user!!.getPlayed()}"
 
     }
 

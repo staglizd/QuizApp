@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
             // Display interstitial ad
             if (mInterstitialAd.isLoaded) {
-                mInterstitialAd.show()
+                //mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet")
             }
@@ -147,10 +147,10 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, QuizQuestionsActivity::class.java)
                     intent.putExtra(Constants.CATEGORY_ID, categorySelected!!.getId())
                     intent.putExtra(Constants.USER_NAME, user!!.getUsername())
-                    intent.putExtra(Constants.NUMBER_OF_QUESTIONS, sNumberQuestions.value.toInt())
+                    intent.putExtra(Constants.NUMBER_OF_QUESTIONS, sNumberQuestions.getValue().toInt())
                     intent.putExtra(Constants.DIFFICULTY, dropdown_difficulty.text.toString())
                     startActivity(intent)
-                    finish()
+                    //finish()
                 } else {
                     Toast.makeText(this, R.string.main_choose_difficulty_msg, Toast.LENGTH_LONG).show()
                 }
